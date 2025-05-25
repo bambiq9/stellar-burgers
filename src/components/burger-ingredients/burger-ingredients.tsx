@@ -5,16 +5,8 @@ import { TTabMode } from '@utils-types';
 import { BurgerIngredientsUI } from '../ui/burger-ingredients';
 import { useSelector } from 'react-redux';
 import { selectIngredients } from '../../services/ingredients-slice';
-import { useDispatch } from '../../services/store';
-import { getIngredients } from '../../services/ingredients-slice';
 
 export const BurgerIngredients: FC = () => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getIngredients());
-  }, []);
-
   const ingredients = useSelector(selectIngredients);
   /** TODO: взять переменные из стора */
   const buns = ingredients.buns;

@@ -12,7 +12,9 @@ import {
 
 import '../../index.css';
 import styles from './app.module.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useDispatch } from '../../services/store';
+import { getIngredients } from '../../services/ingredients-slice';
 
 import {
   AppHeader,
@@ -21,12 +23,20 @@ import {
   OrderInfo,
   ProtectedRoute
 } from '@components';
+import { useEffect } from 'react';
 
-const App = () => (
-  <div className={styles.app}>
-    <AppHeader />
-    <BrowserRouter>
-      <Routes>
+const App = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getIngredients());
+  }, []);
+
+  return (
+    <div className={styles.app}>
+      <AppHeader />
+      <Routes location={{ pathname: '/' }}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
         <Route
@@ -77,7 +87,11 @@ const App = () => (
             </ProtectedRoute>
           }
         />
+        <Route path='/ingredients/:id' element={<IngredientDetails />} />
         <Route path='*' element={<NotFound404 />} />
+      </Routes>
+
+      <Routes>
         <Route
           path='/feed/:number'
           element={
@@ -89,7 +103,12 @@ const App = () => (
         <Route
           path='/ingredients/:id'
           element={
-            <Modal title='' onClose={() => {}}>
+            <Modal
+              title=''
+              onClose={() => {
+                navigate(-1);
+              }}
+            >
               <IngredientDetails />
             </Modal>
           }
@@ -103,8 +122,8 @@ const App = () => (
           }
         />
       </Routes>
-    </BrowserRouter>
-  </div>
-);
+    </div>
+  );
+};
 
 export default App;
