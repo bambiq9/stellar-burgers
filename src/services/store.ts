@@ -13,12 +13,14 @@ import {
   useSelector as selectorHook
 } from 'react-redux';
 import userSlice from './user-slice';
+import feedSlice from './feed-slice';
 
 const rootReducer = combineSlices(
   ingredientsReducer,
   constructorReducer,
-  userSlice
-); // Заменить на импорт настоящего редьюсера
+  userSlice,
+  feedSlice
+);
 
 const store = configureStore({
   reducer: rootReducer,
