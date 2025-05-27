@@ -15,17 +15,16 @@ export const IngredientDetails: FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!isLoading && typeof id === 'string') {
+    if (typeof id === 'string') {
       dispatch(setIngredient(id));
     }
-  }, [isLoading]);
+  }, [id]);
 
   const ingredient = useSelector(selectIngredient);
-  const ingredientData = ingredient;
 
-  if (!ingredientData) {
+  if (isLoading || !ingredient) {
     return <Preloader />;
   }
 
-  return <IngredientDetailsUI ingredientData={ingredientData} />;
+  return <IngredientDetailsUI ingredientData={ingredient} />;
 };

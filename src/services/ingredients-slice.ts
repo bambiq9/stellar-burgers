@@ -1,23 +1,26 @@
 import { getIngredientsApi } from '@api';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  combineSlices,
+  createAsyncThunk,
+  createSlice,
+  PayloadAction
+} from '@reduxjs/toolkit';
 import { TIngredient } from '@utils-types';
+import { RootState } from './store';
 
 interface IngredientsState {
-  ingredients: {
-    buns: TIngredient[];
-    mains: TIngredient[];
-    sauces: TIngredient[];
-  };
+  // ingredients: {
+  //   buns: TIngredient[];
+  //   mains: TIngredient[];
+  //   sauces: TIngredient[];
+  // };
+  ingredients: TIngredient[];
   currentIngredient: TIngredient | null;
   isLoading: boolean;
 }
 
 const initialState: IngredientsState = {
-  ingredients: {
-    buns: [],
-    mains: [],
-    sauces: []
-  },
+  ingredients: [],
   currentIngredient: null,
   isLoading: false
 };
@@ -31,17 +34,31 @@ const ingredientsSlice = createSlice({
   initialState,
   reducers: {
     setIngredient: (sliceState, action: PayloadAction<string>) => {
-      Object.values(sliceState.ingredients).forEach((ingredients) => {
-        const ingredient = ingredients.find(
-          (ingredient) => ingredient._id === action.payload
-        );
-        if (ingredient) sliceState.currentIngredient = ingredient;
+      // Object.values(sliceState.ingredients).forEach((ingredients) => {
+      //   const ingredient = ingredients.find(
+      //     (ingredient) => ingredient._id === action.payload
+      //   );
+      //   if (ingredient) sliceState.currentIngredient = ingredient;
+      // });
+      const ingredient = sliceState.ingredients.find((ingredient) => {
+        console.log('test');
+        return ingredient._id === action.payload;
       });
+      if (ingredient) sliceState.currentIngredient = ingredient;
+      console.log(sliceState.currentIngredient);
     }
   },
   selectors: {
     selectIngredient: (sliceState) => sliceState.currentIngredient,
     selectIngredients: (sliceState) => sliceState.ingredients,
+    selectBuns: (sliceState) =>
+      sliceState.ingredients.filter((ingredient) => ingredient.type === 'bun'),
+    selectSauces: (sliceState) =>
+      sliceState.ingredients.filter(
+        (ingredient) => ingredient.type === 'sauce'
+      ),
+    selectMains: (sliceState) =>
+      sliceState.ingredients.filter((ingredient) => ingredient.type === 'main'),
     selectIsLoading: (sliceState) => sliceState.isLoading
   },
   extraReducers: (builder) => {
@@ -52,27 +69,22 @@ const ingredientsSlice = createSlice({
       .addCase(getIngredients.rejected, (state) => {
         state.isLoading = false;
       })
-      .addCase(getIngredients.fulfilled, (state, action) => {
-        const buns: TIngredient[] = [];
-        const mains: TIngredient[] = [];
-        const sauces: TIngredient[] = [];
-        action.payload.forEach((ingredient) => {
-          if (ingredient.type === 'bun') buns.push(ingredient);
-          if (ingredient.type === 'main') mains.push(ingredient);
-          if (ingredient.type === 'sauce') sauces.push(ingredient);
-        });
-
-        return {
-          ...state,
-          isLoading: false,
-          ingredients: { buns, mains, sauces }
-        };
-      });
+      .addCase(getIngredients.fulfilled, (state, action) => ({
+        ...state,
+        isLoading: false,
+        ingredients: action.payload
+      }));
   }
 });
 
-export const { selectIngredient, selectIngredients, selectIsLoading } =
-  ingredientsSlice.selectors;
+export const {
+  selectIngredient,
+  selectIngredients,
+  selectIsLoading,
+  selectBuns,
+  selectMains,
+  selectSauces
+} = ingredientsSlice.selectors;
 
 export const { setIngredient } = ingredientsSlice.actions;
 export default ingredientsSlice;
