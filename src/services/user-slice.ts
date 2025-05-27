@@ -1,5 +1,6 @@
 import {
   forgotPasswordApi,
+  getOrdersApi,
   getUserApi,
   loginUserApi,
   logoutApi,
@@ -10,7 +11,7 @@ import {
 } from '@api';
 import { deleteCookie, setCookie } from '../utils/cookie';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TUser } from '@utils-types';
+import { TOrder, TUser } from '@utils-types';
 
 export const registerUser = createAsyncThunk(
   'registerUser',
@@ -43,8 +44,14 @@ export const getUser = createAsyncThunk(
   async () => await getUserApi()
 );
 
+export const getOrders = createAsyncThunk(
+  'getOrders',
+  async () => await getOrdersApi()
+);
+
 interface UserState {
   data: TUser;
+  orders: TOrder[];
   loginUserError?: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -52,6 +59,7 @@ interface UserState {
 
 const initialState: UserState = {
   data: { name: '', email: '' },
+  orders: [],
   loginUserError: null,
   isLoading: false,
   isAuthenticated: false
@@ -64,7 +72,8 @@ export const userSlice = createSlice({
   selectors: {
     selectUser: (state) => state.data,
     selectIsAuthenticated: (state) => state.isAuthenticated,
-    selectIsLoading: (state) => state.isLoading
+    selectIsLoading: (state) => state.isLoading,
+    selectOrders: (state) => state.orders
   },
   extraReducers: (builder) => {
     builder
@@ -104,10 +113,24 @@ export const userSlice = createSlice({
         state.data = { name: '', email: '' };
         localStorage.removeItem('refreshToken');
         deleteCookie('accessToken');
+      })
+      .addCase(getOrders.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getOrders.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(getOrders.fulfilled, (state, action) => {
+        state.orders = action.payload;
+        state.isLoading = false;
       });
   }
 });
 
-export const { selectIsAuthenticated, selectUser, selectIsLoading } =
-  userSlice.selectors;
+export const {
+  selectIsAuthenticated,
+  selectUser,
+  selectIsLoading,
+  selectOrders
+} = userSlice.selectors;
 export default userSlice;
