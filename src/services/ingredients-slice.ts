@@ -1,19 +1,8 @@
 import { getIngredientsApi } from '@api';
-import {
-  combineSlices,
-  createAsyncThunk,
-  createSlice,
-  PayloadAction
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TIngredient } from '@utils-types';
-import { RootState } from './store';
 
 interface IngredientsState {
-  // ingredients: {
-  //   buns: TIngredient[];
-  //   mains: TIngredient[];
-  //   sauces: TIngredient[];
-  // };
   ingredients: TIngredient[];
   currentIngredient: TIngredient | null;
   isLoading: boolean;
@@ -34,18 +23,10 @@ const ingredientsSlice = createSlice({
   initialState,
   reducers: {
     setIngredient: (sliceState, action: PayloadAction<string>) => {
-      // Object.values(sliceState.ingredients).forEach((ingredients) => {
-      //   const ingredient = ingredients.find(
-      //     (ingredient) => ingredient._id === action.payload
-      //   );
-      //   if (ingredient) sliceState.currentIngredient = ingredient;
-      // });
-      const ingredient = sliceState.ingredients.find((ingredient) => {
-        console.log('test');
-        return ingredient._id === action.payload;
-      });
+      const ingredient = sliceState.ingredients.find(
+        (ingredient) => ingredient._id === action.payload
+      );
       if (ingredient) sliceState.currentIngredient = ingredient;
-      console.log(sliceState.currentIngredient);
     }
   },
   selectors: {

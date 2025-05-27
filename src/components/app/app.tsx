@@ -12,7 +12,13 @@ import {
 
 import '../../index.css';
 import styles from './app.module.css';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  useNavigate,
+  useLocation,
+  useParams
+} from 'react-router-dom';
 import { useDispatch } from '../../services/store';
 import { getIngredients } from '../../services/ingredients-slice';
 
@@ -100,7 +106,12 @@ const App = () => {
           <Route
             path='/feed/:number'
             element={
-              <Modal title='' onClose={() => {}}>
+              <Modal
+                title='Детали заказа'
+                onClose={() => {
+                  navigate(-1);
+                }}
+              >
                 <OrderInfo />
               </Modal>
             }
@@ -121,7 +132,12 @@ const App = () => {
           <Route
             path='/profile/orders/:number'
             element={
-              <Modal title='' onClose={() => {}}>
+              <Modal
+                title='Детали заказа'
+                onClose={() => {
+                  navigate(-1);
+                }}
+              >
                 <OrderInfo />
               </Modal>
             }

@@ -1,9 +1,10 @@
-import { getFeedsApi } from '@api';
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { TOrder } from '@utils-types';
+import { getFeedsApi, getOrderByNumberApi } from '@api';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { TIngredient, TOrder } from '@utils-types';
 
 interface FeedState {
   orders: TOrder[];
+  currentOrder: TOrder;
   total: number;
   totalToday: number;
   isLoading: boolean;
@@ -11,6 +12,15 @@ interface FeedState {
 
 const initialState: FeedState = {
   orders: [],
+  currentOrder: {
+    createdAt: '',
+    ingredients: [],
+    _id: '',
+    status: '',
+    name: '',
+    updatedAt: 'string',
+    number: 0
+  },
   total: 0,
   totalToday: 0,
   isLoading: false
@@ -18,12 +28,18 @@ const initialState: FeedState = {
 
 export const getFeed = createAsyncThunk('getFeed', async () => getFeedsApi());
 
+export const getFeedOrder = createAsyncThunk(
+  'getFeedOrder',
+  async (orderNumber: number) => getOrderByNumberApi(orderNumber)
+);
+
 const feedSlice = createSlice({
   name: 'feed',
   initialState,
   reducers: {},
   selectors: {
     selectOrders: (state) => state.orders,
+    selectCurrentOrder: (state) => state.currentOrder,
     selectTotal: (state) => state.total,
     selectTotalToday: (state) => state.totalToday,
     selectIsLoading: (state) => state.isLoading
@@ -41,11 +57,26 @@ const feedSlice = createSlice({
         state.total = action.payload.total;
         state.totalToday = action.payload.totalToday;
         state.isLoading = false;
+      })
+      .addCase(getFeedOrder.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getFeedOrder.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(getFeedOrder.fulfilled, (state, action) => {
+        state.currentOrder = action.payload.orders[0];
+        state.isLoading = false;
       });
   }
 });
 
-export const { selectOrders, selectTotal, selectTotalToday, selectIsLoading } =
-  feedSlice.selectors;
+export const {
+  selectOrders,
+  selectCurrentOrder,
+  selectTotal,
+  selectTotalToday,
+  selectIsLoading
+} = feedSlice.selectors;
 
 export default feedSlice;

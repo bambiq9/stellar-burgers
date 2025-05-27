@@ -13,7 +13,6 @@ import {
 
 export const BurgerIngredients: FC = () => {
   const ing = useSelector(selectIngredients);
-  console.log(ing);
 
   /** TODO: взять переменные из стора */
   const buns = useSelector(selectBuns);
