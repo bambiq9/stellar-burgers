@@ -1,5 +1,6 @@
-import { combineSlices, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TConstructorIngredient, TIngredient } from '@utils-types';
+import { orderBurgerApi } from '@api';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { TConstructorIngredient } from '@utils-types';
 
 interface ConstructorState {
   constructorIngredients: {
@@ -14,6 +15,10 @@ const initialState: ConstructorState = {
     ingredients: []
   }
 };
+
+export const placeOrder = createAsyncThunk('getFeed', async (data: string[]) =>
+  orderBurgerApi(data)
+);
 
 const constructorSlice = createSlice({
   name: 'burgerConstructor',
@@ -44,6 +49,11 @@ const constructorSlice = createSlice({
   selectors: {
     selectConstructorIngredients: (sliceState) =>
       sliceState.constructorIngredients
+  },
+  extraReducers: (builder) => {
+    builder.addCase(placeOrder.pending, (state) => {});
+    builder.addCase(placeOrder.rejected, (state) => {});
+    builder.addCase(placeOrder.fulfilled, (state) => {});
   }
 });
 

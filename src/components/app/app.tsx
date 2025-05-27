@@ -12,13 +12,7 @@ import {
 
 import '../../index.css';
 import styles from './app.module.css';
-import {
-  Routes,
-  Route,
-  useNavigate,
-  useLocation,
-  useParams
-} from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from '../../services/store';
 import { getIngredients } from '../../services/ingredients-slice';
 
@@ -77,7 +71,7 @@ const App = () => {
         <Route
           path='/reset-password'
           element={
-            <ProtectedRoute>
+            <ProtectedRoute onlyUnAuth>
               <ResetPassword />
             </ProtectedRoute>
           }

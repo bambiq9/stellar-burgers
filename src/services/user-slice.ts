@@ -2,12 +2,13 @@ import {
   forgotPasswordApi,
   getUserApi,
   loginUserApi,
+  logoutApi,
   registerUserApi,
   resetPasswordApi,
   TLoginData,
   TRegisterData
 } from '@api';
-import { setCookie } from '../utils/cookie';
+import { deleteCookie, setCookie } from '../utils/cookie';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
 
@@ -19,6 +20,11 @@ export const registerUser = createAsyncThunk(
 export const loginUser = createAsyncThunk(
   'loginUser',
   async (data: TLoginData) => await loginUserApi(data)
+);
+
+export const logoutUser = createAsyncThunk(
+  'logoutUser',
+  async () => await logoutApi()
 );
 
 export const forgotPassword = createAsyncThunk(
@@ -85,6 +91,19 @@ export const userSlice = createSlice({
         state.data = action.payload.user;
         state.isAuthenticated = true;
         state.isLoading = false;
+      })
+      .addCase(logoutUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(logoutUser.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isAuthenticated = false;
+        state.data = { name: '', email: '' };
+        localStorage.removeItem('refreshToken');
+        deleteCookie('accessToken');
       });
   }
 });
