@@ -10,7 +10,6 @@ import { selectCurrentOrder, getFeedOrder } from '../../services/feed-slice';
 
 export const OrderInfo: FC = () => {
   const { number } = useParams();
-  console.log(number);
 
   const isLoading = useSelector(selectIsLoading);
   const dispatch = useDispatch();
@@ -23,7 +22,6 @@ export const OrderInfo: FC = () => {
 
   /** TODO: взять переменные orderData и ingredients из стора */
   const orderData = useSelector(selectCurrentOrder);
-  console.log(orderData);
 
   const ingredients: TIngredient[] = useSelector(selectIngredients);
 

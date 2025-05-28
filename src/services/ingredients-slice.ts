@@ -1,5 +1,10 @@
 import { getIngredientsApi } from '@api';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+  PayloadAction
+} from '@reduxjs/toolkit';
 import { TIngredient } from '@utils-types';
 
 interface IngredientsState {
@@ -58,14 +63,20 @@ const ingredientsSlice = createSlice({
   }
 });
 
-export const {
-  selectIngredient,
-  selectIngredients,
-  selectIsLoading,
-  selectBuns,
-  selectMains,
-  selectSauces
-} = ingredientsSlice.selectors;
+export const { selectIngredient, selectIngredients, selectIsLoading } =
+  ingredientsSlice.selectors;
 
 export const { setIngredient } = ingredientsSlice.actions;
 export default ingredientsSlice;
+
+export const selectBuns = createSelector([selectIngredients], (state) =>
+  state.filter((ingredient) => ingredient.type === 'bun')
+);
+
+export const selectMains = createSelector([selectIngredients], (state) =>
+  state.filter((ingredient) => ingredient.type === 'main')
+);
+
+export const selectSauces = createSelector([selectIngredients], (state) =>
+  state.filter((ingredient) => ingredient.type === 'sauce')
+);
