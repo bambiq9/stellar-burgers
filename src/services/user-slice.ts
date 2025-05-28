@@ -7,7 +7,8 @@ import {
   registerUserApi,
   resetPasswordApi,
   TLoginData,
-  TRegisterData
+  TRegisterData,
+  updateUserApi
 } from '@api';
 import { deleteCookie, setCookie } from '../utils/cookie';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
@@ -42,6 +43,11 @@ export const resetPassword = createAsyncThunk(
 export const getUser = createAsyncThunk(
   'getUser',
   async () => await getUserApi()
+);
+
+export const updateUser = createAsyncThunk(
+  'updateUser',
+  async (data: Partial<TRegisterData>) => await updateUserApi(data)
 );
 
 export const getOrders = createAsyncThunk(
@@ -123,6 +129,16 @@ export const userSlice = createSlice({
       .addCase(getOrders.fulfilled, (state, action) => {
         state.orders = action.payload;
         state.isLoading = false;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateUser.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.data = action.payload.user;
       });
   }
 });
