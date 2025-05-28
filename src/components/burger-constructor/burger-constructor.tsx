@@ -1,13 +1,17 @@
-import { FC, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { TConstructorIngredient } from '@utils-types';
 import { BurgerConstructorUI } from '@ui';
 import { useSelector, useDispatch } from '../../services/store';
-import {
-  placeOrder,
-  selectConstructorIngredients
-} from '../../services/constructor-slice';
+import { selectConstructorIngredients } from '../../services/constructor-slice';
 import { selectIsAuthenticated } from '../../services/user-slice';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import {
+  clearOrder,
+  placeOrder,
+  selectIsLoading,
+  selectOrder
+} from '../../services/order-slice';
+import { clearConstructor } from '../../services/constructor-slice';
 
 export const BurgerConstructor: FC = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
@@ -15,9 +19,12 @@ export const BurgerConstructor: FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const orderRequest = false;
+  const orderRequest = useSelector(selectIsLoading);
+  const orderModalData = useSelector(selectOrder);
 
-  const orderModalData = null;
+  useEffect(() => {
+    if (orderModalData) dispatch(clearConstructor());
+  }, [orderModalData]);
 
   const onOrderClick = () => {
     if (!isAuthenticated) {
@@ -31,7 +38,10 @@ export const BurgerConstructor: FC = () => {
     );
     dispatch(placeOrder(data));
   };
-  const closeOrderModal = () => {};
+
+  const closeOrderModal = () => {
+    dispatch(clearOrder());
+  };
 
   const price = useMemo(
     () =>

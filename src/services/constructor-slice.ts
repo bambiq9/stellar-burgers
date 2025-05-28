@@ -16,10 +16,6 @@ const initialState: ConstructorState = {
   }
 };
 
-export const placeOrder = createAsyncThunk('getFeed', async (data: string[]) =>
-  orderBurgerApi(data)
-);
-
 const constructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
@@ -44,20 +40,19 @@ const constructorSlice = createSlice({
         sliceState.constructorIngredients.ingredients.filter(
           (ingredient) => ingredient.id !== id
         );
+    },
+    clearConstructor: (sliceState) => {
+      sliceState.constructorIngredients = { bun: null, ingredients: [] };
     }
   },
   selectors: {
     selectConstructorIngredients: (sliceState) =>
       sliceState.constructorIngredients
-  },
-  extraReducers: (builder) => {
-    builder.addCase(placeOrder.pending, (state) => {});
-    builder.addCase(placeOrder.rejected, (state) => {});
-    builder.addCase(placeOrder.fulfilled, (state) => {});
   }
 });
 
 export const { selectConstructorIngredients } = constructorSlice.selectors;
 
-export const { addIngredient, removeIngredient } = constructorSlice.actions;
+export const { addIngredient, removeIngredient, clearConstructor } =
+  constructorSlice.actions;
 export default constructorSlice;
