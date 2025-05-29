@@ -58,7 +58,7 @@ export const getOrders = createAsyncThunk(
 interface UserState {
   data: TUser;
   orders: TOrder[];
-  loginUserError?: string | null;
+  error: string | undefined;
   isLoading: boolean;
   isAuthenticated: boolean;
 }
@@ -66,7 +66,7 @@ interface UserState {
 const initialState: UserState = {
   data: { name: '', email: '' },
   orders: [],
-  loginUserError: null,
+  error: undefined,
   isLoading: false,
   isAuthenticated: false
 };
@@ -79,20 +79,29 @@ export const userSlice = createSlice({
     selectUser: (state) => state.data,
     selectIsAuthenticated: (state) => state.isAuthenticated,
     selectIsLoading: (state) => state.isLoading,
-    selectOrders: (state) => state.orders
+    selectOrders: (state) => state.orders,
+    selectError: (state) => state.error
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state) => {})
-      .addCase(loginUser.rejected, (state, action) => {})
+      .addCase(loginUser.pending, (state) => {
+        state.error = undefined;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.error = action.error.message;
+      })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.data = action.payload.user;
         state.isAuthenticated = true;
         localStorage.setItem('refreshToken', action.payload.refreshToken);
         setCookie('accessToken', action.payload.accessToken);
       })
-      .addCase(registerUser.pending, (state) => {})
-      .addCase(registerUser.rejected, (state) => {})
+      .addCase(registerUser.pending, (state) => {
+        state.error = undefined;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.error = action.error.message;
+      })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.data = action.payload.user;
       })
@@ -107,14 +116,7 @@ export const userSlice = createSlice({
         state.isAuthenticated = true;
         state.isLoading = false;
       })
-      .addCase(logoutUser.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(logoutUser.rejected, (state) => {
-        state.isLoading = false;
-      })
       .addCase(logoutUser.fulfilled, (state) => {
-        state.isLoading = false;
         state.isAuthenticated = false;
         state.data = { name: '', email: '' };
         localStorage.removeItem('refreshToken');
@@ -131,10 +133,12 @@ export const userSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(updateUser.pending, (state) => {
+        state.error = undefined;
         state.isLoading = true;
       })
-      .addCase(updateUser.rejected, (state) => {
+      .addCase(updateUser.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = state.error = action.error.message;
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -147,6 +151,7 @@ export const {
   selectIsAuthenticated,
   selectUser,
   selectIsLoading,
-  selectOrders
+  selectOrders,
+  selectError
 } = userSlice.selectors;
 export default userSlice;

@@ -1,12 +1,13 @@
 import { ProfileUI } from '@ui-pages';
 import { FC, SyntheticEvent, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from '../../services/store';
-import { selectUser, updateUser } from '../../services/user-slice';
+import { selectError, selectUser, updateUser } from '../../services/user-slice';
 
 export const Profile: FC = () => {
   const dispatch = useDispatch();
   /** TODO: взять переменную из стора */
   const user = useSelector(selectUser);
+  const error = useSelector(selectError);
 
   const [formValue, setFormValue] = useState({
     name: user.name,
@@ -51,6 +52,7 @@ export const Profile: FC = () => {
 
   return (
     <ProfileUI
+      updateUserError={error}
       formValue={formValue}
       isFormChanged={isFormChanged}
       handleCancel={handleCancel}

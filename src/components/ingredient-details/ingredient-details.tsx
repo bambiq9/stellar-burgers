@@ -18,7 +18,7 @@ export const IngredientDetails: FC = () => {
     if (typeof id === 'string') {
       dispatch(setIngredient(id));
     }
-  }, [id]);
+  }, [isLoading, id]);
 
   const ingredient = useSelector(selectIngredient);
 
