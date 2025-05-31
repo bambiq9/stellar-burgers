@@ -25,6 +25,10 @@
   text-decoration: none;
 }
 
+.link_active svg {
+  color: var(--text-primary-color);
+}
+
 .link_position_last {
   display: flex;
   justify-content: flex-end;

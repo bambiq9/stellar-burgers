@@ -77,6 +77,7 @@ export const userSlice = createSlice({
   reducers: {},
   selectors: {
     selectUser: (state) => state.data,
+    selectUserName: (state) => state.data.name,
     selectIsAuthenticated: (state) => state.isAuthenticated,
     selectIsLoading: (state) => state.isLoading,
     selectOrders: (state) => state.orders,
@@ -150,6 +151,7 @@ export const userSlice = createSlice({
 export const {
   selectIsAuthenticated,
   selectUser,
+  selectUserName,
   selectIsLoading,
   selectOrders,
   selectError
