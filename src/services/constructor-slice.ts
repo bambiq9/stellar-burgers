@@ -1,6 +1,6 @@
 import { orderBurgerApi } from '@api';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TConstructorIngredient } from '@utils-types';
+import { TConstructorIngredient, TIngredient } from '@utils-types';
 
 interface ConstructorState {
   constructorIngredients: {
@@ -8,6 +8,11 @@ interface ConstructorState {
     ingredients: TConstructorIngredient[];
   };
 }
+
+type TReorderPayload = {
+  ingredient: TConstructorIngredient;
+  direction: string;
+};
 
 const initialState: ConstructorState = {
   constructorIngredients: {
@@ -41,6 +46,19 @@ const constructorSlice = createSlice({
           (ingredient) => ingredient.id !== id
         );
     },
+    reorderIngredient: (sliceState, action: PayloadAction<TReorderPayload>) => {
+      const ingredients: TConstructorIngredient[] =
+        sliceState.constructorIngredients.ingredients;
+      const ingredient: TConstructorIngredient = action.payload.ingredient;
+      const index = ingredients.findIndex((item) => ingredient.id === item.id);
+
+      if (index === -1) return;
+
+      ingredients.splice(index, 1);
+      const direction = action.payload.direction;
+      if (direction === 'up') ingredients.splice(index - 1, 0, ingredient);
+      if (direction === 'down') ingredients.splice(index + 1, 0, ingredient);
+    },
     clearConstructor: (sliceState) => {
       sliceState.constructorIngredients = { bun: null, ingredients: [] };
     }
@@ -53,6 +71,10 @@ const constructorSlice = createSlice({
 
 export const { selectConstructorIngredients } = constructorSlice.selectors;
 
-export const { addIngredient, removeIngredient, clearConstructor } =
-  constructorSlice.actions;
+export const {
+  addIngredient,
+  removeIngredient,
+  clearConstructor,
+  reorderIngredient
+} = constructorSlice.actions;
 export default constructorSlice;
