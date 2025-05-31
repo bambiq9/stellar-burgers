@@ -10,9 +10,10 @@ import {
   TRegisterData,
   updateUserApi
 } from '@api';
-import { deleteCookie, setCookie } from '../utils/cookie';
+import { deleteCookie } from '../utils/cookie';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TOrder, TUser } from '@utils-types';
+import { addToken, removeToken } from '../utils/token';
 
 export const registerUser = createAsyncThunk(
   'registerUser',
@@ -21,13 +22,18 @@ export const registerUser = createAsyncThunk(
 
 export const loginUser = createAsyncThunk(
   'loginUser',
-  async (data: TLoginData) => await loginUserApi(data)
+  async (data: TLoginData) => {
+    const response = await loginUserApi(data);
+    addToken(response);
+    return response;
+  }
 );
 
-export const logoutUser = createAsyncThunk(
-  'logoutUser',
-  async () => await logoutApi()
-);
+export const logoutUser = createAsyncThunk('logoutUser', async () => {
+  const response = await logoutApi();
+  removeToken();
+  return response;
+});
 
 export const forgotPassword = createAsyncThunk(
   'forgotPassword',
@@ -94,8 +100,6 @@ export const userSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.data = action.payload.user;
         state.isAuthenticated = true;
-        localStorage.setItem('refreshToken', action.payload.refreshToken);
-        setCookie('accessToken', action.payload.accessToken);
       })
       .addCase(registerUser.pending, (state) => {
         state.error = undefined;
@@ -120,8 +124,6 @@ export const userSlice = createSlice({
       .addCase(logoutUser.fulfilled, (state) => {
         state.isAuthenticated = false;
         state.data = { name: '', email: '' };
-        localStorage.removeItem('refreshToken');
-        deleteCookie('accessToken');
       })
       .addCase(getOrders.pending, (state) => {
         state.isLoading = true;
