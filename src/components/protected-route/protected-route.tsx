@@ -29,7 +29,7 @@ export const ProtectedRoute = ({
 
   if (onlyUnAuth && isAuthenticated) {
     const from = location.state?.from || { pathname: '/' };
-    console.log(from);
+
     return <Navigate replace to={from} />;
   }
 

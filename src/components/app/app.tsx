@@ -13,7 +13,7 @@ import {
 import '../../index.css';
 import styles from './app.module.css';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { useDispatch } from '../../services/store';
+import { useDispatch, useSelector } from '../../services/store';
 import { getIngredients } from '../../services/ingredients-slice';
 
 import {
@@ -25,9 +25,14 @@ import {
 } from '@components';
 import { useEffect } from 'react';
 import { getUser } from '../../services/user-slice';
+import { selectConstructorIngredients } from '../../services/constructor-slice';
+import { selectCurrentOrder } from '../../services/feed-slice';
+import { DynamicTitle } from '../ui/dynamic-title';
 
 const App = () => {
   const location = useLocation();
+  const currentIngredient = useSelector(selectConstructorIngredients);
+  const currentOrder = useSelector(selectCurrentOrder);
 
   const background = location.state?.background;
   const navigate = useNavigate();
@@ -37,6 +42,8 @@ const App = () => {
     dispatch(getUser());
     dispatch(getIngredients());
   }, []);
+
+  const handleModalClose = () => navigate(-1);
 
   return (
     <div className={styles.app}>
@@ -93,6 +100,22 @@ const App = () => {
           }
         />
         <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route
+          path='/feed/:number'
+          element={
+            <DynamicTitle>
+              <OrderInfo />
+            </DynamicTitle>
+          }
+        />
+        <Route
+          path='/profile/orders/:number'
+          element={
+            <DynamicTitle>
+              <OrderInfo />
+            </DynamicTitle>
+          }
+        />
         <Route path='*' element={<NotFound404 />} />
       </Routes>
       {background && (
@@ -101,10 +124,8 @@ const App = () => {
             path='/feed/:number'
             element={
               <Modal
-                title='Детали заказа'
-                onClose={() => {
-                  navigate(-1);
-                }}
+                title={`#${currentOrder.number}`}
+                onClose={handleModalClose}
               >
                 <OrderInfo />
               </Modal>
@@ -113,12 +134,7 @@ const App = () => {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal
-                title='Детали ингредиента'
-                onClose={() => {
-                  navigate(-1);
-                }}
-              >
+              <Modal title='Детали ингредиента' onClose={handleModalClose}>
                 <IngredientDetails />
               </Modal>
             }
@@ -127,10 +143,8 @@ const App = () => {
             path='/profile/orders/:number'
             element={
               <Modal
-                title='Детали заказа'
-                onClose={() => {
-                  navigate(-1);
-                }}
+                title={`#${currentOrder.number}`}
+                onClose={handleModalClose}
               >
                 <OrderInfo />
               </Modal>
