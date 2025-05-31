@@ -99,7 +99,14 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path='/ingredients/:id' element={<IngredientDetails />} />
+        <Route
+          path='/ingredients/:id'
+          element={
+            <DynamicTitle title='Детали ингредиента'>
+              <IngredientDetails />
+            </DynamicTitle>
+          }
+        />
         <Route
           path='/feed/:number'
           element={
