@@ -11,12 +11,14 @@ interface IngredientsState {
   ingredients: TIngredient[];
   currentIngredient: TIngredient | null;
   isLoading: boolean;
+  error: string | undefined;
 }
 
 const initialState: IngredientsState = {
   ingredients: [],
   currentIngredient: null,
-  isLoading: false
+  isLoading: false,
+  error: undefined
 };
 
 export const getIngredients = createAsyncThunk('getIngredients', async () =>
@@ -51,9 +53,11 @@ const ingredientsSlice = createSlice({
     builder
       .addCase(getIngredients.pending, (state) => {
         state.isLoading = true;
+        state.error = undefined;
       })
-      .addCase(getIngredients.rejected, (state) => {
+      .addCase(getIngredients.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.error.message;
       })
       .addCase(getIngredients.fulfilled, (state, action) => ({
         ...state,

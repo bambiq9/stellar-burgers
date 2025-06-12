@@ -10,8 +10,7 @@ import {
   TRegisterData,
   updateUserApi
 } from '@api';
-import { deleteCookie } from '../utils/cookie';
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { TOrder, TUser } from '@utils-types';
 import { addToken, removeToken } from '../utils/token';
 
@@ -93,27 +92,35 @@ export const userSlice = createSlice({
     builder
       .addCase(loginUser.pending, (state) => {
         state.error = undefined;
+        state.isLoading = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.error = action.error.message;
+        state.isLoading = false;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.data = action.payload.user;
         state.isAuthenticated = true;
+        state.isLoading = false;
       })
       .addCase(registerUser.pending, (state) => {
         state.error = undefined;
+        state.isLoading = true;
       })
       .addCase(registerUser.rejected, (state, action) => {
+        state.isLoading = false;
         state.error = action.error.message;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.data = action.payload.user;
       })
       .addCase(getUser.pending, (state) => {
+        state.error = undefined;
         state.isLoading = true;
       })
-      .addCase(getUser.rejected, (state) => {
+      .addCase(getUser.rejected, (state, action) => {
+        state.error = action.error.message;
         state.isLoading = false;
       })
       .addCase(getUser.fulfilled, (state, action) => {
@@ -121,14 +128,25 @@ export const userSlice = createSlice({
         state.isAuthenticated = true;
         state.isLoading = false;
       })
+      .addCase(logoutUser.pending, (state) => {
+        state.error = undefined;
+        state.isLoading = true;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.error = action.error.message;
+        state.isLoading = false;
+      })
       .addCase(logoutUser.fulfilled, (state) => {
         state.isAuthenticated = false;
         state.data = { name: '', email: '' };
+        state.isLoading = false;
       })
       .addCase(getOrders.pending, (state) => {
+        state.error = undefined;
         state.isLoading = true;
       })
-      .addCase(getOrders.rejected, (state) => {
+      .addCase(getOrders.rejected, (state, action) => {
+        state.error = action.error.message;
         state.isLoading = false;
       })
       .addCase(getOrders.fulfilled, (state, action) => {
@@ -141,11 +159,33 @@ export const userSlice = createSlice({
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = state.error = action.error.message;
+        state.error = action.error.message;
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.data = action.payload.user;
+      })
+      .addCase(forgotPassword.pending, (state) => {
+        state.error = undefined;
+        state.isLoading = true;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      })
+      .addCase(forgotPassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.error = undefined;
+        state.isLoading = true;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.error.message;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.isLoading = false;
       });
   }
 });
