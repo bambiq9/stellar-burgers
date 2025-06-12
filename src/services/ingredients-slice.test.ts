@@ -30,10 +30,14 @@ const mockIngredients: TIngredient[] = [
   }
 ];
 
-describe('Testing ingredients slice', () => {
-  test('getIngredient action fullfilled', () => {
-    const initialState = ingredientsSlice.getInitialState();
+let initialState: ReturnType<typeof ingredientsSlice.getInitialState>;
 
+beforeEach(() => {
+  initialState = ingredientsSlice.getInitialState();
+});
+
+describe('Testing ingredients slice', () => {
+  test('getIngredient action fullfilled should set ingredients to the fetched data', () => {
     const action = {
       type: getIngredients.fulfilled.type,
       payload: mockIngredients
@@ -45,19 +49,17 @@ describe('Testing ingredients slice', () => {
     expect(updatedState.isLoading).toBe(false);
   });
 
-  test('getIngredient action pending', async () => {
-    const initialState = ingredientsSlice.getInitialState();
-
+  test('getIngredient action pending should set isLoading to true and clear error', async () => {
     const action = {
       type: getIngredients.pending.type
     };
 
     const updatedState = ingredientsSlice.reducer(initialState, action);
     expect(updatedState.isLoading).toBe(true);
+    expect(updatedState.error).toBe(undefined);
   });
 
-  test('getIngredient action rejected', async () => {
-    const initialState = ingredientsSlice.getInitialState();
+  test('getIngredient action rejected should set error to error message', async () => {
     const errorMessage = 'action failed';
 
     const action = {

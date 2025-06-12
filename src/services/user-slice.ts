@@ -111,9 +111,8 @@ export const userSlice = createSlice({
         state.isLoading = false;
         state.error = action.error.message;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase(registerUser.fulfilled, (state) => {
         state.isLoading = false;
-        state.data = action.payload.user;
       })
       .addCase(getUser.pending, (state) => {
         state.error = undefined;

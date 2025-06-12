@@ -8,6 +8,7 @@ interface FeedState {
   total: number;
   totalToday: number;
   isLoading: boolean;
+  error: string | undefined;
 }
 
 const initialState: FeedState = {
@@ -23,7 +24,8 @@ const initialState: FeedState = {
   },
   total: 0,
   totalToday: 0,
-  isLoading: false
+  isLoading: false,
+  error: undefined
 };
 
 export const getFeed = createAsyncThunk('getFeed', async () => getFeedsApi());
@@ -48,9 +50,11 @@ const feedSlice = createSlice({
     builder
       .addCase(getFeed.pending, (state) => {
         state.isLoading = true;
+        state.error = undefined;
       })
-      .addCase(getFeed.rejected, (state) => {
+      .addCase(getFeed.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.error.message;
       })
       .addCase(getFeed.fulfilled, (state, action) => {
         state.orders = action.payload.orders;
@@ -60,9 +64,11 @@ const feedSlice = createSlice({
       })
       .addCase(getFeedOrder.pending, (state) => {
         state.isLoading = true;
+        state.error = undefined;
       })
-      .addCase(getFeedOrder.rejected, (state) => {
+      .addCase(getFeedOrder.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.error.message;
       })
       .addCase(getFeedOrder.fulfilled, (state, action) => {
         state.currentOrder = action.payload.orders[0];

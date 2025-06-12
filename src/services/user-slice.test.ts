@@ -62,10 +62,14 @@ const mockOrders: TOrder[] = [
   }
 ];
 
+let initialState: ReturnType<typeof userSlice.getInitialState>;
+
+beforeEach(() => {
+  initialState = userSlice.getInitialState();
+});
+
 describe('Testing user slice', () => {
   test('all pending actions should set isLoading to true and error to undefined', () => {
-    const initialState = userSlice.getInitialState();
-
     actionTypes.forEach((type) => {
       const action = {
         type: type.pending.type
@@ -79,8 +83,6 @@ describe('Testing user slice', () => {
   });
 
   test('all rejected actions should set isLoading to false and set error message', () => {
-    const initialState = userSlice.getInitialState();
-
     actionTypes.forEach((type) => {
       const errorMessage = 'action failed';
 
@@ -97,9 +99,7 @@ describe('Testing user slice', () => {
     });
   });
 
-  test('loginUser.fulfilled', () => {
-    const initialState = userSlice.getInitialState();
-
+  test('loginUser.fulfilled should update store with user data and set isAuthenticated to true', () => {
     const action = {
       type: loginUser.fulfilled.type,
       payload: {
@@ -114,9 +114,7 @@ describe('Testing user slice', () => {
     expect(updatedState.error).toBe(undefined);
   });
 
-  test('registerUser.fulfilled', () => {
-    const initialState = userSlice.getInitialState();
-
+  test('registerUser.fulfilled should set isLoading to false', () => {
     const action = {
       type: registerUser.fulfilled.type,
       payload: {
@@ -126,14 +124,11 @@ describe('Testing user slice', () => {
 
     const updatedState = userSlice.reducer(initialState, action);
     expect(updatedState.isAuthenticated).toBe(false);
-    expect(updatedState.data).toEqual(mockUser);
     expect(updatedState.isLoading).toBe(false);
     expect(updatedState.error).toBe(undefined);
   });
 
-  test('getUser.fulfilled', () => {
-    const initialState = userSlice.getInitialState();
-
+  test('getUser.fulfilled should set user data and authenticate user', () => {
     const action = {
       type: getUser.fulfilled.type,
       payload: {
@@ -148,9 +143,7 @@ describe('Testing user slice', () => {
     expect(updatedState.error).toBe(undefined);
   });
 
-  test('logoutUser.fulfilled', () => {
-    const initialState = userSlice.getInitialState();
-
+  test('logoutUser.fulfilled should clear user data and deauthenticate user', () => {
     const action = {
       type: logoutUser.fulfilled.type
     };
@@ -162,9 +155,7 @@ describe('Testing user slice', () => {
     expect(updatedState.error).toBe(undefined);
   });
 
-  test('getOrders.fulfilled', () => {
-    const initialState = userSlice.getInitialState();
-
+  test('getOrders.fulfilled should set user orders', () => {
     const action = {
       type: getOrders.fulfilled.type,
       payload: mockOrders
@@ -176,9 +167,7 @@ describe('Testing user slice', () => {
     expect(updatedState.error).toBe(undefined);
   });
 
-  test('updateUser.fulfilled', () => {
-    const initialState = userSlice.getInitialState();
-
+  test('updateUser.fulfilled should update user data', () => {
     const action = {
       type: updateUser.fulfilled.type,
       payload: {
