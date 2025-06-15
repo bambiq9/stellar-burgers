@@ -35,3 +35,40 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add('addIngredientsToConstructor', () => {
+  const buttonText = /добавить/i;
+
+  // Add the first bun
+  cy.get(`[data-cy^="ingredient-bun"]`)
+    .first()
+    .within(() => {
+      cy.contains(buttonText).click();
+    });
+
+  // Should replace with the second bun
+  cy.get(`[data-cy^="ingredient-bun"]`)
+    .last()
+    .within(() => {
+      cy.contains(buttonText).click();
+    });
+
+  // Add two ingredients and one sauce
+  cy.get(`[data-cy^="ingredient-main"]`)
+    .first()
+    .within(() => {
+      cy.contains(buttonText).click();
+    });
+
+  cy.get(`[data-cy^="ingredient-main"]`)
+    .last()
+    .within(() => {
+      cy.contains(buttonText).click();
+    });
+
+  cy.get(`[data-cy^="ingredient-sauce"]`)
+    .first()
+    .within(() => {
+      cy.contains(buttonText).click();
+    });
+});
