@@ -1,4 +1,10 @@
 describe('Testing burger constructor page', () => {
+  const ingredientsToClick = [
+    { name: 'Краторная булка N-200i', type: 'bun' },
+    { name: 'Филе Люминесцентного тетраодонтимформа', type: 'main' },
+    { name: 'Биокотлета из марсианской Магнолии', type: 'main' },
+    { name: 'Соус традиционный галактический', type: 'sauce' }
+  ];
   beforeEach(() => {
     cy.intercept(`api/ingredients`, {
       fixture: '../fixtures/ingredients.json'
@@ -12,7 +18,13 @@ describe('Testing burger constructor page', () => {
   });
 
   it('Should add bun, mains and sauce into the constructor', () => {
-    cy.addIngredientsToConstructor();
+    ingredientsToClick.forEach((ingredient) => {
+      cy.addIngredientToConstructor(ingredient.name);
+      const type = ingredient.type === 'sauce' ? 'main' : ingredient.type;
+      // Constructor section of an ingredient's type
+      // should contain an ingredient with the same name
+      cy.get(`[data-cy="constructor-${type}"]`).contains(ingredient.name);
+    });
 
     // Constructor should have two buns (top, bottom)
     // and three ingredients total
@@ -64,7 +76,9 @@ describe('Testing burger constructor page', () => {
       'accessTokenTest'
     );
 
-    cy.addIngredientsToConstructor();
+    ingredientsToClick.forEach((ingredient) =>
+      cy.addIngredientToConstructor(ingredient.name)
+    );
     cy.contains(/оформить заказ/i).click();
 
     cy.get('#modals').as('modal');

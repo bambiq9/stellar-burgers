@@ -2,6 +2,6 @@
 
 declare namespace Cypress {
   interface Chainable<Subject> {
-    addIngredientsToConstructor(): Chainable<any>;
+    addIngredientToConstructor(ingredient: string): Chainable<any>;
   }
 }
