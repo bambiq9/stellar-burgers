@@ -3,7 +3,10 @@ describe('Testing burger constructor page', () => {
     cy.intercept(`api/ingredients`, {
       fixture: '../fixtures/ingredients.json'
     });
-    cy.visit('localhost:4000');
+    cy.visit('/');
+  });
+
+  afterEach(() => {
     cy.clearAllLocalStorage();
     cy.clearAllCookies();
   });
@@ -14,7 +17,7 @@ describe('Testing burger constructor page', () => {
     // Constructor should have two buns (top, bottom)
     // and three ingredients total
     cy.get('[data-cy="constructor-bun"]').should('have.length', 2);
-    cy.get('[data-cy="constructor-main"').children().should('have.length', 3);
+    cy.get('[data-cy="constructor-main"]').children().should('have.length', 3);
   });
 
   it('Should open ingredient modal', () => {
@@ -46,7 +49,7 @@ describe('Testing burger constructor page', () => {
 
     cy.intercept('api/auth/login', { fixture: '../fixtures/user.json' });
     cy.intercept('api/orders', { fixture: '../fixtures/orders.json' });
-    cy.visit('localhost:4000/login');
+    cy.visit('/login');
 
     cy.get('[name="email"]').type('test@test.test');
     cy.get('[name="password"]').type('test123@@@');
@@ -64,13 +67,14 @@ describe('Testing burger constructor page', () => {
     cy.addIngredientsToConstructor();
     cy.contains(/оформить заказ/i).click();
 
-    cy.get('#modals').within(() => {
+    cy.get('#modals').as('modal');
+    cy.get('@modal').within(() => {
       cy.contains(/идентификатор заказа/i);
       cy.contains(orderId);
     });
 
     cy.get('[data-cy="modal-close-btn"]').click();
-    cy.get('#modals').children().should('have.length', 0);
+    cy.get('@modal').children().should('have.length', 0);
     cy.get('[data-cy="constructor-bun"]').should('not.exist');
     cy.get('[data-cy="constructor-main"]')
       .children()
