@@ -6,11 +6,13 @@ import { TOrder } from '@utils-types';
 interface OrderState {
   currentOrder: TOrder | null;
   isLoading: boolean;
+  error: string | undefined;
 }
 
 const initialState: OrderState = {
   currentOrder: null,
-  isLoading: false
+  isLoading: false,
+  error: undefined
 };
 
 export const placeOrder = createAsyncThunk(
@@ -34,9 +36,11 @@ const orderSlice = createSlice({
     builder;
     builder.addCase(placeOrder.pending, (state) => {
       state.isLoading = true;
+      state.error = undefined;
     });
-    builder.addCase(placeOrder.rejected, (state) => {
+    builder.addCase(placeOrder.rejected, (state, action) => {
       state.isLoading = false;
+      state.error = action.error.message;
     });
     builder.addCase(placeOrder.fulfilled, (state, action) => {
       state.isLoading = false;
